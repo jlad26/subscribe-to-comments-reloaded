@@ -1427,7 +1427,10 @@ namespace stcr {
 				global $current_user;
 
 				if ( current_user_can( 'manage_options' ) ) {
-					add_options_page( 'Subscribe to Comments', 'Subscribe to Comments', 'manage_options', WP_PLUGIN_DIR . '/subscribe-to-comments-reloaded/options/index.php' );
+					add_options_page( 'Subscribe to Comments Reloaded', 'Subscribe to Comments Reloaded', 'manage_options', WP_PLUGIN_DIR . '/subscribe-to-comments-reloaded/options/index.php' );
+					add_menu_page('Subscribe to Comments','StCR','manage_options',
+						WP_PLUGIN_DIR . '/subscribe-to-comments-reloaded/options/index.php','',
+						'data:image/svg+xml;base64,'.base64_encode(file_get_contents(WP_PLUGIN_DIR . '/subscribe-to-comments-reloaded/images/inline-icon5.svg')),95.00001);
 				}
 
 				return $_s;
@@ -1665,9 +1668,20 @@ namespace stcr {
 					$html_to_show = qtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage( $html_to_show );
 				}
 				echo "<!-- BEGIN: subscribe to comments reloaded -->" . $html_to_show . "<!-- END: subscribe to comments reloaded -->";
-			}
-		}
+			} // end subscribe_reloaded_show
 
-		// end of class declaration
+			public function setUserCoookie() {
+				// Set a cookie if the user just subscribed without commenting
+				$subscribe_to_comments_action  = ! empty( $_POST['sra'] ) ? $_POST['sra'] : ( ! empty( $_GET['sra'] ) ? $_GET['sra'] : 0 );
+				$subscribe_to_comments_post_ID = ! empty( $_POST['srp'] ) ? intval( $_POST['srp'] ) : ( ! empty( $_GET['srp'] ) ? intval( $_GET['srp'] ) : 0 );
+
+				if ( ! empty( $subscribe_to_comments_action ) && ! empty( $_POST['subscribe_reloaded_email'] ) &&
+					( $subscribe_to_comments_action == 's' ) && ( $subscribe_to_comments_post_ID > 0 )
+				) {
+					$subscribe_to_comments_clean_email = $wp_subscribe_reloaded->clean_email( $_POST['subscribe_reloaded_email'] );
+					setcookie( 'comment_author_email' . COOKIEHASH, $subscribe_to_comments_clean_email, time() + 1209600, '/' );
+				}
+			}
+		} // end of class declaration
 	}
 }

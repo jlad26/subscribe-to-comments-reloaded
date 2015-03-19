@@ -24,15 +24,6 @@ namespace stcr {
 	{
 		// Initialize the cool stuff
 		$wp_subscribe_reloaded = new wp_subscribe_reloaded();
-		// Set a cookie if the user just subscribed without commenting
-		$subscribe_to_comments_action  = ! empty( $_POST['sra'] ) ? $_POST['sra'] : ( ! empty( $_GET['sra'] ) ? $_GET['sra'] : 0 );
-		$subscribe_to_comments_post_ID = ! empty( $_POST['srp'] ) ? intval( $_POST['srp'] ) : ( ! empty( $_GET['srp'] ) ? intval( $_GET['srp'] ) : 0 );
-
-		if ( ! empty( $subscribe_to_comments_action ) && ! empty( $_POST['subscribe_reloaded_email'] ) &&
-			( $subscribe_to_comments_action == 's' ) && ( $subscribe_to_comments_post_ID > 0 )
-		) {
-			$subscribe_to_comments_clean_email = $wp_subscribe_reloaded->clean_email( $_POST['subscribe_reloaded_email'] );
-			setcookie( 'comment_author_email' . COOKIEHASH, $subscribe_to_comments_clean_email, time() + 1209600, '/' );
-		}
+		$wp_subscribe_reloaded->setUserCoookie();
 	}
 }
